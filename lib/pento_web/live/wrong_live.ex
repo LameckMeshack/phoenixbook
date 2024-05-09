@@ -5,6 +5,7 @@ defmodule PentoWeb.WrongLive do
     {:ok,
      assign(socket,
        score: 0,
+       number: Enum.random(1..10),
        message: "Guess a number."
      )}
   end
@@ -12,8 +13,9 @@ defmodule PentoWeb.WrongLive do
   def render(assigns) do
     ~H"""
     <h1>Your score: <%= @score %></h1>
+
     <h2>
-      <%= @message %>
+      <%= @message %> It's <%= time() %>
     </h2>
     <h2>
       <%= for n <- 1..10 do %>
@@ -25,16 +27,22 @@ defmodule PentoWeb.WrongLive do
 
   def handle_event("guess", %{"number" => guess} = data, socket) do
     IO.inspect(data)
-    message = "Your guess: #{guess}. Wrong. Guess again. "
-    score = socket.assigns.score - 1
+    number = socket.assigns.number
 
-    {
-      :noreply,
-      assign(
-        socket,
-        message: message,
-        score: score
-      )
-    }
+    case number == String.to_integer(guess) do
+      true ->
+        message = "Your guess: #{guess}. Correct. Guess again. "
+        score = socket.assigns.score + 1
+        {:noreply, assign(socket, message: message, score: score, number: Enum.random(1..10))}
+
+      false ->
+        message = "Your guess: #{guess}. Wrong. Guess again. "
+        score = socket.assigns.score - 1
+        {:noreply, assign(socket, message: message, score: score)}
+    end
+  end
+
+  def time do
+    DateTime.utc_now() |> to_string
   end
 end
