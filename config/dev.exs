@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :pento, Pento.Repo,
   username: "postgres",
-  password: "admin",
+  password: "mysecretpassword",
   hostname: "localhost",
   database: "pento_dev",
   stacktrace: true,
